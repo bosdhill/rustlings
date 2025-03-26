@@ -1,8 +1,11 @@
 // TODO: Fix the compiler error in the function without adding any new line.
-fn fill_vec(vec: Vec<i32>) -> Vec<i32> {
+// 2. Pass mutable reference to a vector
+fn fill_vec(vec: &mut Vec<i32>) -> Vec<i32> {
+    // 3. Modify the vector
     vec.push(88);
 
-    vec
+    // 4. Return a copy of the vector
+    vec.clone()
 }
 
 fn main() {
@@ -15,7 +18,8 @@ mod tests {
 
     #[test]
     fn move_semantics3() {
-        let vec0 = vec![22, 44, 66];
+        // 1. Create a mutable reference to a vector 
+        let vec0 = &mut vec![22, 44, 66];
         let vec1 = fill_vec(vec0);
         assert_eq!(vec1, [22, 44, 66, 88]);
     }
