@@ -32,13 +32,7 @@ mod my_module {
             match input.1 {
                 Command::Uppercase => input.0.to_uppercase(),
                 Command::Trim => input.0.trim().to_string(),
-                Command::Append(size) => {
-                    let mut barred = input.0.to_owned();
-                    for _ in 0..size {
-                        barred += "bar";
-                    }
-                    barred
-                }
+                Command::Append(n) => input.0.to_string() + &"bar".repeat(n),
             }
         ).collect()
     }
