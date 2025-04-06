@@ -83,34 +83,6 @@ enum Message {
 }
 ```
 
-## `Option` Enum vs Null Values
-The Option type encodes the very common scenario in which a value could be something or it could be nothing. This allows the compiler to check whether you’ve handled all the cases you should be handling.
-
-The `Option` enum is an alternative to `null` or `nil` exception handling. As such, Rust does not have nulls, but it does have an enum that can encode the concept of a value being present or absent. This enum is `Option<T>`, and it is [defined by the standard library](https://doc.rust-lang.org/std/option/enum.Option.html) as follows:
-
-``` rust
-enum Option<T> {
-    None,
-    Some(T),
-}
-```
-
-Here are some examples of using `Option` values to hold number types and char types:
-``` rust
-let some_number = Some(5);
-let some_char = Some('e');
-
-let absent_number: Option<i32> = None;
-```
-
-Why is having `Option<T>` any better than having null? Because `Option<T>` and `T` are different types, the compiler won’t let us use an `Option<T>` value as if it were definitely a valid value:
-``` rust
-let x: i8 = 5;
-let y: Option<i8> = Some(5);
-// ERROR! Will not compile
-let sum = x + y;
-```
-
 ## Matching
 
 The `match` expression allows you to compare a value against a series of patterns and then execute code based on which pattern matches composed of. It does this using **match arms** that consists of a pattern and some code.
