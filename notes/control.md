@@ -1,6 +1,7 @@
 # Control Flow
 
 ## If
+
 If expressions allow you to branch your code based on conditions. If the condition evaluates to `true`, the code block executes; if it's `false`, it skips the block.
 
 ```rust
@@ -24,9 +25,11 @@ println!("The value of number is: {}", number);
 ```
 
 ## Loops
+
 Rust provides several ways to perform repeated operations through loops.
 
 ### loop
+
 The `loop` keyword creates an infinite loop that runs until explicitly stopped with `break`.
 
 ```rust
@@ -45,6 +48,7 @@ println!("The result is {}", result);  // Prints "The result is 20"
 ```
 
 ### For
+
 The `for` loop is used to iterate over elements of a collection or a range.
 
 ```rust
@@ -68,6 +72,7 @@ println!("LIFTOFF!!!");
 ```
 
 ## While
+
 The `while` loop runs as long as a condition is true.
 
 ```rust
@@ -92,6 +97,7 @@ while index < a.len() {
 ```
 
 ## Match
+
 The `match` expression allows you to compare a value against a series of patterns and execute code based on which pattern matches.
 
 ```rust
@@ -128,6 +134,7 @@ fn value_in_cents(coin: Coin) -> u8 {
 ```
 
 ## if let
+
 The `if let` syntax lets you handle one matching pattern while ignoring the rest.
 
 ```rust
@@ -145,23 +152,24 @@ if let Some(3) = some_u8_value {
 ```
 
 ## Labels
+
 Labels allow you to specify which loop you want to `break` or `continue` when you have nested loops.
 
 ```rust
 // Using loop labels
 'outer: loop {
     println!("Entered the outer loop");
-    
+
     'inner: loop {
         println!("Entered the inner loop");
-        
+
         // This breaks the inner loop
         // break;
-        
+
         // This breaks the outer loop
         break 'outer;
     }
-    
+
     println!("This point will never be reached");
 }
 

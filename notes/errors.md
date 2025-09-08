@@ -2,10 +2,10 @@
 
 ## `Result<T,E>` Enum
 
-`Result` allows a way to tell us whether it succeeded or failed and at the same time give us 
+`Result` allows a way to tell us whether it succeeded or failed and at the same time give us
 either the type of value we want or error information.
 
-``` rust
+```rust
 enum Result<T, E> {
     Ok(T),
     Err(E),
@@ -13,7 +13,8 @@ enum Result<T, E> {
 ```
 
 For example, we can match the `Ok` and `Err` variants:
-``` rust
+
+```rust
 use std::fs::File;
 
 fn main() {
@@ -29,7 +30,8 @@ fn main() {
 ## Result Error Handling
 
 We can handle different error variants in the match arm instead of just panics:
-``` rust
+
+```rust
 use std::fs::File;
 use std::io::ErrorKind;
 
@@ -55,23 +57,24 @@ fn main() {
 
 1. `unwrap` lets us unwrap `Ok` variant and panics with `Err` otherwise
 
-    ``` rust
+    ```rust
     use std::fs::File;
 
     fn main() {
         let greeting_file = File::open("hello.txt").unwrap();
     }
     ```
+
     will panic with:
-    ``` rust
+
+    ```rust
     thread 'main' panicked at src/main.rs:4:49:
     called `Result::unwrap()` on an `Err` value: Os { code: 2, kind: NotFound, message: "No such file or directory" }
     ```
 
-
 2. `unwrap..expect` is the same but lets you choose the panic message
 
-    ``` rust
+    ```rust
     use std::fs::File;
 
     fn main() {
@@ -80,10 +83,10 @@ fn main() {
     }
     ```
 
-
 3. `unwrap_or_else` allows you to branch in the `Err` case for error handling
-    More concise using `unwrap_or_else` Result helper method:
-    ``` rust
+   More concise using `unwrap_or_else` Result helper method:
+
+    ```rust
     use std::fs::File;
     use std::io::ErrorKind;
 
@@ -103,7 +106,8 @@ fn main() {
 ## The `?` Operator
 
 Using just match expressions:
-``` rust
+
+```rust
 use std::fs::File;
 use std::io::{self, Read};
 
@@ -125,7 +129,8 @@ fn read_username_from_file() -> Result<String, io::Error> {
 ```
 
 Using the `?` operator:
-``` rust
+
+```rust
 use std::fs::File;
 use std::io::{self, Read};
 

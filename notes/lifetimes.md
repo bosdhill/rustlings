@@ -11,11 +11,12 @@ Lifetime parameters signify particular lifetimes of values that are borrowed.
 Basically, it is a construct used by the compiler to ensure all borrows are valid.
 
 A lifetime of a value is not the same as its scope:
-``` rust
+
+```rust
 // Lifetimes are annotated below with lines denoting the creation
 // and destruction of each variable.
-// `i` has the longest lifetime because its scope entirely encloses 
-// both `borrow1` and `borrow2`. The duration of `borrow1` compared 
+// `i` has the longest lifetime because its scope entirely encloses
+// both `borrow1` and `borrow2`. The duration of `borrow1` compared
 // to `borrow2` is irrelevant since they are disjoint.
 fn main() {
     let i = 3; // Lifetime for `i` starts. ────────────────┐
@@ -38,23 +39,24 @@ fn main() {
 
 ## Syntax
 
-Explicit annotation of a type has the form &'a T where 'a has already been introduced. This lifetime syntax indicates 
+Explicit annotation of a type has the form &'a T where 'a has already been introduced. This lifetime syntax indicates
 that the lifetime of foo may not exceed that of 'a.
 
-``` rust
+```rust
 foo<'a>
 // `foo` has a lifetime parameter `'a`
 ```
 
 the lifetime of foo cannot exceed that of either 'a or 'b:
 
-``` rust
+```rust
 foo<'a, 'b>
 // `foo` has lifetime parameters `'a` and `'b`
 ```
 
 When used as parameters in a function:
-``` rust
+
+```rust
 // `print_refs` takes two references to `i32` which have different
 // lifetimes `'a` and `'b`. These two lifetimes must both be at
 // least as long as the function `print_refs`.
@@ -66,24 +68,25 @@ fn print_refs<'a, 'b>(x: &'a i32, y: &'b i32) {
 The following will error because the lifetime of `_x` will not outlive `_y`.
 
 There are also no arguments to the function that will force `'a` to live longer.
-``` rust
+
+```rust
 // A function which takes no arguments, but has a lifetime parameter `'a`.
 fn failed_borrow<'a>() {
     let _x = 12;
 
     // ERROR: `_x` does not live long enough
     let _y: &'a i32 = &_x;
-    // Attempting to use the lifetime `'a` as an explicit type annotation 
+    // Attempting to use the lifetime `'a` as an explicit type annotation
     // inside the function will fail because the lifetime of `&_x` is shorter
     // than that of `_y`. A short lifetime cannot be coerced into a longer one.
 }
 ```
 
-When a function has a lifetime parameter like <'a>, it means the function can accept or return references with that 
+When a function has a lifetime parameter like <'a>, it means the function can accept or return references with that
 particular lifetime. The lifetime parameter is a way to tell the compiler:
 "these references need to live at least this long.": `fn failed_borrow<'a>()`
 
-This is saying "the reference stored in _y must have the lifetime 'a.": `let _y: &'a i32 = &_x;`
+This is saying "the reference stored in \_y must have the lifetime 'a.": `let _y: &'a i32 = &_x;`
 
 Since `'a` can be any lifetime, that means it _may outlive_ the function call, and since `_x` goes out of scope
 after the function call, it will not live long enough to be used with `'a`.
@@ -91,23 +94,27 @@ after the function call, it will not live long enough to be used with `'a`.
 ## Functions
 
 For function signatures with lifetime parameters:
-1) any reference (declared in the function) must be annotated with a lifetime.
-2) any referencde returned must have the same lifetime as _an input_ or be declared _static_.
 
-Note that returning references without input is banned if it would result 
+1. any reference (declared in the function) must be annotated with a lifetime.
+2. any referencde returned must have the same lifetime as _an input_ or be declared _static_.
+
+Note that returning references without input is banned if it would result
 in returning references to invalid data.
 
 Invalid example:
-``` rust
+
+```rust
 fn invalid_output<'a>() -> &'a String { &String::from("foo") }
 ```
+
 The above is invalid: `'a` must live longer than the function.
 Here, `&String::from("foo")` would create a `String`, followed by a
 reference. Then the data is dropped upon exiting the scope, leaving
 a reference to invalid data to be returned.
 
 Valid examples:
-``` rust
+
+```rust
 // One input reference with lifetime `'a` which must live
 // at least as long as the function.
 fn print_one<'a>(x: &'a i32) {
@@ -132,8 +139,10 @@ fn pass_x<'a, 'b>(x: &'a i32, _: &'b i32) -> &'a i32 { x }
 ```
 
 ## Structs
+
 Struct methods are annotated similar to functions:
-``` rust
+
+```rust
 struct Owner(i32);
 
 impl Owner {
@@ -153,7 +162,8 @@ fn main() {
 ```
 
 Annotation of lifetimes in structures are also similar to functions:
-``` rust
+
+```rust
 // A type `Borrowed` which houses a reference to an
 // `i32`. The reference to `i32` must outlive `Borrowed`.
 #[derive(Debug)]
@@ -193,7 +203,7 @@ fn main() {
 
 Annotation of lifetimes in trait methods basically are similar to functions. Note that impl may have annotation of lifetimes too.
 
-``` rust
+```rust
 // A struct with annotation of lifetimes.
 #[derive(Debug)]
 struct Borrowed<'a> {
@@ -220,11 +230,11 @@ fn main() {
 
 Similar to generics, lifetimes can be bounded with `:`:
 
-1) `T: 'a`: All references in `T` must outlive lifetime `'a`. (For example lifetime of fields in a struct / enum type).
-2) `T: Trait + 'a`: Type `T` must implement trait `Trait` and all 
-references in `T` must outlive `'a`.
+1. `T: 'a`: All references in `T` must outlive lifetime `'a`. (For example lifetime of fields in a struct / enum type).
+2. `T: Trait + 'a`: Type `T` must implement trait `Trait` and all
+   references in `T` must outlive `'a`.
 
-``` rust
+```rust
 use std::fmt::Debug; // Trait to bound with.
 
 #[derive(Debug)]
@@ -262,7 +272,7 @@ fn main() {
 The compiler will automatically pick the shorter of the two lifetimes,
 and effectively coerces the longer lifetime to the shorter one:
 
-``` rust
+```rust
 // Here, Rust infers a lifetime that is as short as possible.
 // The two references are then coerced to that lifetime.
 fn multiply<'a>(first: &'a i32, second: &'a i32) -> i32 {
@@ -277,16 +287,18 @@ fn choose_first<'a: 'b, 'b>(first: &'a i32, _: &'b i32) -> &'b i32 {
 
 fn main() {
     let first = 2; // Longer lifetime
-    
+
     {
         let second = 3; // Shorter lifetime
-        
+
         println!("The product is {}", multiply(&first, &second));
         println!("{} is the first", choose_first(&first, &second));
     };
 }
 ```
+
 will output:
+
 ```
 The product is 6
 2 is the first
@@ -295,14 +307,15 @@ The product is 6
 ## Static Lifetimes (lifetime which is remainder of the program)
 
 Static lifetimes are used to represent data pointed to by the reference
-will exist for the lifetime of the program, and may be coerced into 
+will exist for the lifetime of the program, and may be coerced into
 shorter lifetimes.
 
 The data is _read-only_, and a variable can be made static by:
-1) Making a constant with the `static` declaration.
-2) Making a string literal which has type: `&'static str`.
 
-``` rust
+1. Making a constant with the `static` declaration.
+2. Making a string literal which has type: `&'static str`.
+
+```rust
 // Make a constant with `'static` lifetime.
 static NUM: i32 = 18;
 
@@ -338,7 +351,7 @@ fn main() {
 
 Since `'static` references only need to be valid for the _remainder of a program's life_, they can be created while the program is executed. Just to demonstrate, the below example uses `Box::leak` to dynamically create `'static` references. In that case it definitely doesn't live for the entire duration, but only from the leaking point onward.
 
-``` rust
+```rust
 extern crate rand;
 use rand::Fill;
 
@@ -364,7 +377,7 @@ A reference with a `'static` lifetime (`&'static T`) is actually a reference tha
 
 Owned data (without any references inside it) automatically satisfies the `T: 'static` bound, even though the variable itself might not live for the entire program. This is because the bound is about the type's contents, not the variable's actual lifetime.
 
-``` rust
+```rust
 use std::fmt::Debug;
 
 fn print_it( input: impl Debug + 'static ) {
@@ -381,7 +394,9 @@ fn main() {
     print_it(&i);
 }
 ```
+
 will output:
+
 ```
 error[E0597]: `i` does not live long enough
   --> src/lib.rs:15:15

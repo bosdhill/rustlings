@@ -1,8 +1,10 @@
 # Generics
 
 ## Restriction
+
 Restricting generic types => only accept types that implement specific traits (like `std::cmp::PartialOrd`):
-``` rust
+
+```rust
 // won't work
 fn largest<T>(list: &[T]) -> &T {
     let mut largest = &list[0];
@@ -17,7 +19,7 @@ fn largest<T>(list: &[T]) -> &T {
 }
 ```
 
-``` rust
+```rust
 $ cargo run
    Compiling chapter10 v0.1.0 (file:///projects/chapter10)
 error[E0369]: binary operation `>` cannot be applied to type `&T`
@@ -38,8 +40,10 @@ error: could not compile `chapter10` (bin "chapter10") due to 1 previous error
 ```
 
 ## Method Definitions
+
 Example:
-``` rust
+
+```rust
 struct Point<T> {
     x: T,
     y: T,
@@ -61,7 +65,7 @@ fn main() {
 We can specify constraints on generic structs with implementing methods that only operate
 on structs that hold a specific type, like `Point<f32>`:
 
-``` rust
+```rust
 impl Point<f32> {
     fn distance_from_origin(&self) -> f32 {
         (self.x.powi(2) + self.y.powi(2)).sqrt()
@@ -69,13 +73,13 @@ impl Point<f32> {
 }
 ```
 
-Generic type parameters in a struct definition aren’t always the same as those you use in that 
-same struct’s method signatures. 
+Generic type parameters in a struct definition aren’t always the same as those you use in that
+same struct’s method signatures.
 
 For example, if a method accepts generic types, and returns a new struct, the passed in type may differ from
 the struct's.
 
-``` rust
+```rust
 struct Point<X1, Y1> {
     x: X1,
     y: Y1,
@@ -100,26 +104,27 @@ fn main() {
 }
 ```
 
-The purpose of this example is to demonstrate a situation in which some generic parameters are declared with impl and 
-some are declared with the method definition. Here, the generic parameters X1 and Y1 are declared after impl because 
+The purpose of this example is to demonstrate a situation in which some generic parameters are declared with impl and
+some are declared with the method definition. Here, the generic parameters X1 and Y1 are declared after impl because
 they go with the struct definition. The generic parameters X2 and Y2 are declared after fn mixup because they’re only
 relevant to the method.
 
 ## Traits as Bounds
 
-When working with generics, the type parameters often must use traits as _bounds_ to stipulate what 
+When working with generics, the type parameters often must use traits as _bounds_ to stipulate what
 functionality a type implements, and allows access to the methods of traits specified in the _bounds_.
 
-``` rust
+```rust
 // Define a function `printer` that takes a generic type `T` which
 // must implement trait `Display`.
 fn printer<T: Display>(t: T) {
     println!("{}", t);
 }
 ```
+
 Bounding restricts the generic to types that conform to the bounds. That is:
 
-``` rust
+```rust
 struct S<T: Display>(T);
 
 // Error! `Vec<T>` does not implement `Display`. This
@@ -129,7 +134,7 @@ let s = S(vec![1]);
 
 ## Accessing Generic Instance Methods
 
-``` rust
+```rust
 // A trait which implements the print marker: `{:?}`.
 use std::fmt::Debug;
 
@@ -166,6 +171,6 @@ fn main() {
     //print_debug(&_triangle);
     //println!("Area: {}", area(&_triangle));
     // ^ TODO: Try uncommenting these.
-    // | Error: Does not implement either `Debug` or `HasArea`. 
+    // | Error: Does not implement either `Debug` or `HasArea`.
 }
 ```

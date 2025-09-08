@@ -1,10 +1,10 @@
 # Collections
 
-
 ## Iterators
 
 1. For loop + iterators
-``` rust
+
+```rust
 // this won't actually iterate from 0 to n-1, it will just print
 // [0..1] and [0..n-1]
 // not sure why
@@ -14,6 +14,7 @@ for i in [0..n] {
 ```
 
 ## iter().map(|v| => {}).collect()
+
 This is reminiscent of Map => Reduce.
 
 ## Vectors
@@ -23,7 +24,8 @@ This is reminiscent of Map => Reduce.
 ## HashMaps
 
 1. Create a new hashmap
-    ``` rust
+
+    ```rust
     // HashMap needs to be included from the stdlib before it can be used
     use std::collections::HashMap;
 
@@ -34,7 +36,8 @@ This is reminiscent of Map => Reduce.
     ```
 
 2. Getting values
-    ``` rust
+
+    ```rust
     let team_name = String::from("Blue");
     // handles the Option by calling copied to get an Option<i32> rather than an Option<&i32>, then unwrap_or to set score to zero if scores doesn’t have an entry for the key
     let score = scores.get(&team_name).copied().unwrap_or(0);
@@ -44,7 +47,7 @@ This is reminiscent of Map => Reduce.
 
 3. Iterating
 
-    ``` rust
+    ```rust
     for (key, value) in &scores {
         println!("{key}: {value}");
     }
@@ -52,7 +55,7 @@ This is reminiscent of Map => Reduce.
 
 4. Overwriting a value
 
-    ``` rust
+    ```rust
     use std::collections::HashMap;
 
     let mut scores = HashMap::new();
@@ -67,7 +70,7 @@ This is reminiscent of Map => Reduce.
 
     Hash maps have a special API for this called entry that takes the key you want to check as a parameter. The return value of the entry method is an enum called Entry that represents a value that might or might not exist.
 
-    ``` rust
+    ```rust
     use std::collections::HashMap;
 
     let mut scores = HashMap::new();
@@ -84,9 +87,9 @@ This is reminiscent of Map => Reduce.
     println!("{scores:?}");
     ```
 
-5. Updating value based on old value
+6. Updating value based on old value
 
-    ``` rust
+    ```rust
     use std::collections::HashMap;
 
     let text = "hello world wonderful world";
@@ -104,19 +107,19 @@ This is reminiscent of Map => Reduce.
     println!("{map:?}");
     ```
 
-6. Swapping out Hashing function with `Hasher` trait
+7. Swapping out Hashing function with `Hasher` trait
 
-    If you profile your code and find that the default hash function is too slow for your purposes, 
-    you can switch to another function by specifying a different hasher. 
-    
-    A hasher is a type that implements the BuildHasher trait. 
+    If you profile your code and find that the default hash function is too slow for your purposes,
+    you can switch to another function by specifying a different hasher.
 
+    A hasher is a type that implements the BuildHasher trait.
 
 ### Ownership
 
 Primitive types or types that implement the `Copy` trait will have their _values copied_ into the HashMap, while `Drop`
 trait types will have their _ownership moved_ by default to the HashMap:
-``` rust
+
+```rust
 use std::collections::HashMap;
 
 let field_name = String::from("Favorite color");
@@ -127,7 +130,8 @@ map.insert(field_name, field_value);
 // field_name and field_value are invalid at this point, try using them and
 // see what compiler error you get!
 ```
-If the references are used, then the references must be valid for the 
+
+If the references are used, then the references must be valid for the
 _lifetime_ of the HashMap.
 
 This would be a problem if the referenced value gets dropped when going
