@@ -47,6 +47,8 @@ error: could not compile `chapter10` (bin "chapter10") due to 1 previous error
 
 ## Method Definitions
 
+When implementing methods for generic structs, you need to declare the generic parameters in the `impl` block. This allows you to define methods that work with the generic types, and you can even add additional generic parameters specific to individual methods.
+
 Example:
 
 ```rust

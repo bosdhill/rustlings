@@ -190,6 +190,8 @@ fn returns_summarizable() -> impl Summary {
 
 ## Advanced Trait Concepts
 
+Beyond basic trait definitions and implementations, Rust's trait system enables powerful patterns like dynamic dispatch, associated types, and complex trait bounds. These advanced concepts allow for flexible, reusable code while maintaining Rust's performance guarantees.
+
 ### Trait Objects and Dynamic Dispatch
 
 ```rust
@@ -216,6 +218,13 @@ impl Draw for Square {
 fn draw_static<T: Draw>(shape: T) {
     shape.draw();
 }
+
+// Box<dyn Trait> explanation:
+// Box allocates data on the heap and gives us a pointer to it
+// dyn Draw means "any type that implements Draw"
+// Box<dyn Draw> is a "trait object" - a fat pointer containing:
+//   - pointer to the data
+//   - pointer to the vtable (method dispatch table)
 
 // Dynamic dispatch - type determined at runtime
 fn draw_dynamic(shapes: Vec<Box<dyn Draw>>) {
@@ -304,4 +313,5 @@ let string = number.to_string();  // Works because i32 implements Display
 - [[lifetimes]] - Lifetime bounds on traits and trait objects
 - [[ownership]] - Ownership semantics in trait methods (`&self`, `&mut self`, `self`)
 - [[enums]] - Implementing traits for enums and pattern matching
-- [[errors]] - Standard library traits like `From`, `Into`, `Display`, `Debug`
+- [[built-ins]] - Standard library traits like `From`, `Into`, `Display`, `Debug`
+- [[errors]] - Error handling with trait-based conversions

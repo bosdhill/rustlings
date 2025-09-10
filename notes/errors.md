@@ -402,7 +402,8 @@ where
 ## See Also
 - [[enums]] - Foundation of the `Result<T,E>` enum
 - [[option]] - For values that might not exist (null safety)
-- [[traits]] - `Result<T,E>` implements many useful traits (`From`, `Into`, etc.)
+- [[traits]] - `Result<T,E>` implements many useful traits
+- [[built-ins]] - Standard traits like `From`, `Into`, `Debug`, `Display` used in error handling
 - [[control]] - Pattern matching for error handling
 - [[generics]] - Result is a generic enum
 

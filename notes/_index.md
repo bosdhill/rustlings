@@ -18,6 +18,7 @@
 | **[[traits]]** | Behavior definitions, impl blocks | Advanced | [[generics]], [[ownership]] |
 | **[[lifetimes]]** | Lifetime annotations, elision | Advanced | [[ownership]], [[generics]] |
 | **[[collections]]** | Vec, String, HashMap, iterators | Intermediate | [[ownership]], [[option]], [[generics]] |
+| **[[built-ins]]** | Common traits (Debug, Clone, From/Into) | Beginner | [[traits]] |
 
 ## 🚧 Future Topics (Not Yet Covered)
 
@@ -57,7 +58,7 @@
 - **[[ownership#String vs &str]]** - Owned vs borrowed string data
 - **[[ownership#Structs]]** - Custom data types and ownership
 
-### Advanced Memory Concepts  
+### Advanced Memory Concepts
 - **[[lifetimes#Lifetime Basics]]** - Annotating reference lifetimes
 - **[[lifetimes#Lifetime Parameters in Functions]]** - Function signature lifetimes
 - **[[lifetimes#Advanced Lifetime Concepts]]** - Complex lifetime relationships
@@ -81,13 +82,20 @@
 
 ### Generic Programming
 - **[[generics#Basic Generics]]** - Type parameters in functions and structs
-- **[[generics#Method Definitions]]** - Generic methods and implementations  
+- **[[generics#Method Definitions]]** - Generic methods and implementations
 - **[[generics#Traits as Bounds]]** - Constraining generic types
 
 ### Traits & Behavior
 - **[[traits#Trait Definitions]]** - Defining shared behavior
 - **[[traits#Implementing Traits]]** - Adding behavior to types
 - **[[traits#Advanced Trait Concepts]]** - Associated types, default methods
+
+### Built-in Traits & Standard Library
+- **[[built-ins#Clone]]** - Explicit copying of values
+- **[[built-ins#Debug]]** - Developer-friendly formatting
+- **[[built-ins#From and Into]]** - Type conversions
+- **[[built-ins#PartialEq and Eq]]** - Equality comparisons
+- **[[built-ins#Default]]** - Default value construction
 
 ## 📦 Collections & Data Structures
 
@@ -129,6 +137,9 @@
 | Understand ownership rules | [[ownership]], [[lifetimes]] |
 | Pattern match on data | [[control#Pattern Matching with Match]], [[enums#Matching]] |
 | Work with dynamic data | [[collections#Vectors]], [[collections#HashMaps]] |
+| Implement common behaviors | [[built-ins]], [[traits]] |
+| Debug and format output | [[built-ins#Debug]], [[built-ins#Display]] |
+| Convert between types | [[built-ins#From and Into]], [[built-ins#AsRef and AsMut]] |
 | Build and organize projects | [[packaging]], [[testing]] |
 | Write concurrent code | [[concurrency]], [[smart-pointers]] |
 | Advanced iteration patterns | [[iterators]], [[patterns]] |
@@ -140,7 +151,7 @@
 #### Beginner (Week 1-2)
 - [[variables]], [[control]], [[enums]]
 
-#### Intermediate (Week 3-4)  
+#### Intermediate (Week 3-4)
 - [[ownership]], [[option]], [[errors]], [[collections]]
 - **Future**: [[packaging]], [[testing]], [[patterns]], [[io]]
 
@@ -164,7 +175,7 @@
 ## 🚀 Getting Started
 
 ### New to Rust?
-1. Start with [[variables]] 
+1. Start with [[variables]]
 2. Move to [[control]]
 3. Tackle [[ownership]]
 4. Practice with [[rust-review-guide]]
@@ -176,7 +187,7 @@
 
 ### Preparing for advanced topics?
 1. Ensure solid understanding of [[ownership]]
-2. Practice with [[collections]] 
+2. Practice with [[collections]]
 3. Master [[option]] and [[errors]]
 4. Then tackle [[generics]] and [[traits]]
 

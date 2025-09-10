@@ -320,6 +320,9 @@ println!("Exited the outer loop");
 
 ## Functions
 
+Functions consists of a set of one or more statements (ending with `;`) but must end with an expression.
+
+The expression can be evaluated implicitly.
 ### Basic Function Syntax
 
 ```rust
