@@ -190,4 +190,3 @@ fn main() {
 - [[errors]] - `Result<T,E>` is a generic enum
 
 **Practice**: `exercises/14_generics/` | **Review**: [[rust-review-guide#Advanced Features Phase]]
-```

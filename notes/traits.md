@@ -57,7 +57,7 @@ fn main() {
 }
 ```
 
-## Default Trait Implmentations
+## Default Trait Implementations
 
 Types can override default implementations, which are good to have
 if we just want a type to have a trait without implementing its
@@ -109,7 +109,7 @@ pub fn notify(item: &impl Summary) {
 }
 ```
 
-this is syntantic sugar for _Trait Bounds_ which look like:
+this is syntactic sugar for _Trait Bounds_ which look like:
 
 ```rust
 pub fn notify<T: Summary>(item: &T) {
@@ -188,10 +188,120 @@ fn returns_summarizable() -> impl Summary {
 
 ---
 
-## See Also
-- [[generics]] - Traits enable generic programming
-- [[lifetimes]] - Lifetime bounds on traits
-- [[ownership]] - Ownership semantics in trait methods
-- [[enums]] - Implementing traits for enums
+## Advanced Trait Concepts
 
-**Practice**: `exercises/15_traits/` | **Review**: [[rust-review-guide#Advanced Features Phase]]
+### Trait Objects and Dynamic Dispatch
+
+```rust
+trait Draw {
+    fn draw(&self);
+}
+
+struct Circle;
+struct Square;
+
+impl Draw for Circle {
+    fn draw(&self) {
+        println!("Drawing a circle");
+    }
+}
+
+impl Draw for Square {
+    fn draw(&self) {
+        println!("Drawing a square");
+    }
+}
+
+// Static dispatch - compiler knows exact type
+fn draw_static<T: Draw>(shape: T) {
+    shape.draw();
+}
+
+// Dynamic dispatch - type determined at runtime
+fn draw_dynamic(shapes: Vec<Box<dyn Draw>>) {
+    for shape in shapes {
+        shape.draw();
+    }
+}
+
+fn main() {
+    let shapes: Vec<Box<dyn Draw>> = vec![
+        Box::new(Circle),
+        Box::new(Square),
+    ];
+    draw_dynamic(shapes);
+}
+```
+
+### Associated Types
+
+```rust
+trait Iterator {
+    type Item;  // Associated type
+
+    fn next(&mut self) -> Option<Self::Item>;
+}
+
+struct Counter {
+    current: i32,
+}
+
+impl Iterator for Counter {
+    type Item = i32;  // Concrete associated type
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.current += 1;
+        Some(self.current)
+    }
+}
+```
+
+### Supertraits
+
+```rust
+// Display is a supertrait of Summary
+trait Summary: std::fmt::Display {
+    fn summarize(&self) -> String {
+        format!("Summary: {}", self)  // Can use Display methods
+    }
+}
+
+struct Article {
+    title: String,
+    content: String,
+}
+
+// Must implement Display first
+impl std::fmt::Display for Article {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.title)
+    }
+}
+
+// Then can implement Summary
+impl Summary for Article {}
+```
+
+### Blanket Implementations
+
+```rust
+// Implement for all types that already implement Display
+impl<T: std::fmt::Display> ToString for T {
+    fn to_string(&self) -> String {
+        format!("{}", self)
+    }
+}
+
+// Now any type implementing Display automatically gets ToString
+let number = 42;
+let string = number.to_string();  // Works because i32 implements Display
+```
+
+---
+
+## See Also
+- [[generics]] - Traits enable generic programming with type bounds
+- [[lifetimes]] - Lifetime bounds on traits and trait objects
+- [[ownership]] - Ownership semantics in trait methods (`&self`, `&mut self`, `self`)
+- [[enums]] - Implementing traits for enums and pattern matching
+- [[errors]] - Standard library traits like `From`, `Into`, `Display`, `Debug`

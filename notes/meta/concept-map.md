@@ -56,17 +56,17 @@ graph TD
 ### Layer 1: Foundation
 **Core language features that everything builds on**
 
-- **[[Variables]]** - Basic data storage
-- **[[control#Functions]]** - Code organization
-- **[[control#If]]** - Basic control flow
+- **[[variables]]** - Basic data storage, mutability, shadowing, scope
+- **[[control#Functions]]** - Code organization and expressions
+- **[[control#If]]** - Basic control flow and conditionals
 
 *Can learn independently - no prerequisites*
 
 ### Layer 2: Memory Management
 **Rust's unique selling point**
 
-- **[[ownership#Ownership Rules]]** ← Requires: Variables
-- **[[ownership#Mutable vs Immutable References]]** ← Requires: Ownership
+- **[[ownership#Ownership Rules]]** ← Requires: [[variables]]
+- **[[ownership#References & Borrowing]]** ← Requires: Ownership
 - **[[lifetimes]]** ← Requires: References, Ownership
 
 *Sequential learning required - each builds on previous*
@@ -74,36 +74,37 @@ graph TD
 ### Layer 3: Data Organization
 **Structuring and organizing data**
 
-- **[[ownership#Structs]]** ← Requires: Ownership, Functions
+- **[[ownership#Structs]]** ← Requires: Ownership, [[control#Functions]]
 - **[[enums]]** ← Requires: Pattern matching concepts
-- **[[control#Match]]** ← Requires: Control flow basics
+- **[[control#Pattern Matching with Match]]** ← Requires: Control flow basics
 
 *Can learn in parallel once Layer 1 is solid*
 
 ### Layer 4: Null Safety
 **Handling optional and missing data**
 
-- **[[option]]** ← Requires: Enums, Pattern matching
-- **[[errors#Result<T,E> Enum]]** ← Requires: Enums, Pattern matching
-- **[[errors#The `?` Operator]]** ← Requires: Result, Functions
+- **[[option]]** ← Requires: [[enums]], Pattern matching
+- **[[errors#Result<T,E> Enum]]** ← Requires: [[enums]], Pattern matching
+- **[[errors#The `?` Operator]]** ← Requires: Result, [[control#Functions]]
 
 *Linear dependency - must learn Option before Result*
 
 ### Layer 5: Generic Programming
 **Code reuse and abstraction**
 
-- **[[generics]]** ← Requires: Functions, Structs, Ownership
-- **[[traits]]** ← Requires: Generics, Methods, Ownership
-- **[[generics#Traits as Bounds]]** ← Requires: Both Generics and Traits
+- **[[generics]]** ← Requires: [[control#Functions]], Structs, [[ownership]]
+- **[[traits]]** ← Requires: [[generics]], Methods, [[ownership]]
+- **[[generics#Traits as Bounds]]** ← Requires: Both [[generics]] and [[traits]]
 
 *Traits and Generics are tightly coupled - learn together*
 
 ### Layer 6: Collections & Data Structures
 **Working with groups of data**
 
-- **[[collections#Vectors]]** ← Requires: Ownership, Generics
-- **[[collections#Strings]]** ← Requires: Ownership, References
-- **[[collections#HashMaps]]** ← Requires: Ownership, Option, Generics
+- **[[collections#Vectors]]** ← Requires: [[ownership]], [[generics]]
+- **[[collections#Strings]]** ← Requires: [[ownership]], References
+- **[[collections#HashMaps]]** ← Requires: [[ownership]], [[option]], [[generics]]
+- **[[collections#Iterator Fundamentals]]** ← Requires: Functional programming concepts
 
 *All require solid ownership understanding*
 
@@ -153,41 +154,43 @@ graph TD
 ### Before Studying Each Topic:
 
 **[[ownership]]**
-- ✅ Understand variables and mutability
-- ✅ Know basic function syntax
+- ✅ Understand [[variables]] and mutability
+- ✅ Know basic [[control#Functions]] syntax
 
 **[[lifetimes]]**
 - ✅ Master [[ownership]] rules
-- ✅ Understand references vs values
+- ✅ Understand [[ownership#References & Borrowing]] vs values
 - ✅ Comfortable with [[generics]] syntax
 
 **[[enums]]**
-- ✅ Know basic [[control#Match]] syntax
-- ✅ Understand data organization with structs
+- ✅ Know basic [[control#Pattern Matching with Match]] syntax
+- ✅ Understand data organization with [[ownership#Structs]]
 
 **[[option]]**
 - ✅ Master [[enums]] and pattern matching
-- ✅ Understand [[control#Match]] exhaustiveness
+- ✅ Understand [[control#Pattern Matching with Match]] exhaustiveness
 
 **[[errors]]**
 - ✅ Comfortable with [[option]] patterns
 - ✅ Know [[control#Functions]] and return types
 - ✅ Understand [[generics]] basics
+- ✅ Familiar with [[errors#Error Handling Patterns]]
 
 **[[generics]]**
 - ✅ Solid [[ownership]] understanding
-- ✅ Know [[ownership#Structs]] and methods
+- ✅ Know [[ownership#Structs]] and [[generics#Method Definitions]]
 - ✅ Basic [[control#Functions]] knowledge
 
 **[[traits]]**
 - ✅ Understand [[generics]] syntax
 - ✅ Know [[ownership#Methods]] and `impl` blocks
-- ✅ Comfortable with [[generics]] bounds
+- ✅ Comfortable with [[generics#Traits as Bounds]]
 
 **[[collections]]**
-- ✅ Master [[ownership]] and borrowing
-- ✅ Understand [[option]] for HashMap lookups
+- ✅ Master [[ownership]] and [[ownership#References & Borrowing]]
+- ✅ Understand [[option]] for [[collections#HashMaps]] lookups
 - ✅ Know [[generics]] for type parameters
+- ✅ Familiar with [[collections#Iterator Fundamentals]]
 
 ## 🎯 Optimal Learning Orders
 

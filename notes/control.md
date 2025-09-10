@@ -6,9 +6,15 @@
 
 **Related Topics**: [[enums]] | [[option]] | [[errors]] | [[ownership]]
 
-## If
+## Overview
 
-If expressions allow you to branch your code based on conditions. If the condition evaluates to `true`, the code block executes; if it's `false`, it skips the block.
+Rust provides powerful control flow constructs that enable you to control program execution. All control flow constructs in Rust are expressions, meaning they can return values.
+
+---
+
+## If Expressions
+
+If expressions allow you to branch your code based on conditions. Unlike many languages, `if` is an expression in Rust, meaning it evaluates to a value.
 
 ```rust
 // Basic if statement
@@ -24,15 +30,57 @@ if number % 4 == 0 {
     println!("number is not divisible by 4, 3, or 2");
 }
 
-// If in a let statement
+// If as an expression (returns a value)
 let condition = true;
-let number = if condition { 5 } else { 6 };
+let number = if condition { 5 } else { 6 };  // Both arms must return same type
 println!("The value of number is: {}", number);
+
+// Multiple conditions with else if
+let score = 85;
+let grade = if score >= 90 {
+    "A"
+} else if score >= 80 {
+    "B"
+} else if score >= 70 {
+    "C"
+} else {
+    "F"
+};
 ```
+
+### If Let Pattern Matching
+
+The `if let` syntax lets you handle one matching pattern while ignoring the rest:
+
+```rust
+let some_value = Some(3);
+
+// Verbose match expression
+match some_value {
+    Some(3) => println!("three!"),
+    _ => (),
+}
+
+// More concise if-let
+if let Some(3) = some_value {
+    println!("three!");
+}
+
+// Can include an else clause
+if let Some(x) = some_value {
+    println!("Got a value: {}", x);
+} else {
+    println!("No value");
+}
+```
+
+> 💡 `if let` is perfect for [[option]] and [[errors#Result<T,E> Enum]] handling
+
+---
 
 ## Loops
 
-Rust provides several ways to perform repeated operations through loops.
+Rust provides three kinds of loops: `loop`, `while`, and `for`. All can be controlled with `break` and `continue`.
 
 ### loop
 
@@ -102,9 +150,30 @@ while index < a.len() {
 }
 ```
 
-## Match
+### While Let Pattern Matching
 
-The `match` expression allows you to compare a value against a series of patterns and execute code based on which pattern matches.
+Similar to `if let`, `while let` keeps executing a block as long as a pattern matches:
+
+```rust
+let mut optional = Some(0);
+
+// Continue running the loop as long as optional contains Some value
+while let Some(i) = optional {
+    if i > 9 {
+        println!("Greater than 9, quit!");
+        optional = None;
+    } else {
+        println!("i is {}", i);
+        optional = Some(i + 1);
+    }
+}
+```
+
+---
+
+## Pattern Matching with Match
+
+The `match` expression is Rust's most powerful control flow construct. It allows you to compare a value against a series of patterns and execute code based on which pattern matches.
 
 ```rust
 // Basic match expression
@@ -139,25 +208,80 @@ fn value_in_cents(coin: Coin) -> u8 {
 }
 ```
 
-## if let
-
-The `if let` syntax lets you handle one matching pattern while ignoring the rest.
+### Match Exhaustiveness
 
 ```rust
-// Match with Option<T>
-let some_u8_value = Some(3);
-match some_u8_value {
-    Some(3) => println!("three"),
-    _ => (),
-}
+// All possible values must be handled
+let boolean_value = true;
+match boolean_value {
+    true => println!("It's true!"),
+    false => println!("It's false!"),
+}  // ✅ Exhaustive - covers all bool values
 
-// Same logic using if let (cleaner)
-if let Some(3) = some_u8_value {
-    println!("three");
+// Using _ for catch-all
+let number = 13;
+match number {
+    1 => println!("One"),
+    2 => println!("Two"),
+    _ => println!("Something else"),  // Handles all other i32 values
 }
 ```
 
-## Labels
+### Match Guards
+
+```rust
+let num = Some(4);
+
+match num {
+    Some(x) if x < 5 => println!("less than five: {}", x),
+    Some(x) => println!("{}", x),
+    None => (),
+}
+```
+
+### Destructuring in Match
+
+```rust
+// Destructuring tuples
+let point = (3, 5);
+match point {
+    (0, 0) => println!("Origin"),
+    (0, y) => println!("On Y axis at {}", y),
+    (x, 0) => println!("On X axis at {}", x),
+    (x, y) => println!("Point at ({}, {})", x, y),
+}
+
+// Destructuring structs
+struct Point { x: i32, y: i32 }
+let p = Point { x: 0, y: 7 };
+
+match p {
+    Point { x, y: 0 } => println!("On the x axis at {}", x),
+    Point { x: 0, y } => println!("On the y axis at {}", y),
+    Point { x, y } => println!("On neither axis: ({}, {})", x, y),
+}
+```
+
+---
+
+## Loop Control
+
+### Break and Continue
+
+```rust
+// Basic break and continue
+for i in 0..10 {
+    if i == 2 {
+        continue;  // Skip rest of this iteration
+    }
+    if i == 8 {
+        break;     // Exit the loop
+    }
+    println!("{}", i);
+}
+```
+
+### Loop Labels
 
 Labels allow you to specify which loop you want to `break` or `continue` when you have nested loops.
 
@@ -180,6 +304,105 @@ Labels allow you to specify which loop you want to `break` or `continue` when yo
 }
 
 println!("Exited the outer loop");
+
+// Using continue with labels
+'outer: for x in 0..3 {
+    'inner: for y in 0..3 {
+        if x == 1 && y == 1 {
+            continue 'outer;  // Skip to next iteration of outer loop
+        }
+        println!("({}, {})", x, y);
+    }
+}
+```
+
+---
+
+## Functions
+
+### Basic Function Syntax
+
+```rust
+// Function with parameters and return type
+fn add_numbers(x: i32, y: i32) -> i32 {
+    x + y  // Expression return (no semicolon)
+}
+
+// Function with explicit return
+fn multiply(x: i32, y: i32) -> i32 {
+    return x * y;  // Early return with semicolon
+}
+
+// Function with no return value (returns unit type ())
+fn print_sum(x: i32, y: i32) {
+    println!("Sum: {}", x + y);
+}
+```
+
+### Function Expressions vs Statements
+
+```rust
+fn example() -> i32 {
+    let x = 5;  // Statement (ends with semicolon)
+
+    let y = {   // Block expression
+        let x = 3;
+        x + 1   // Expression (no semicolon) - returns 4
+    };
+
+    y + x  // Expression return - returns 9
+}
+```
+
+---
+
+## Common Patterns
+
+### Early Returns
+
+```rust
+fn divide(dividend: f64, divisor: f64) -> Option<f64> {
+    if divisor == 0.0 {
+        return None;  // Early return
+    }
+    Some(dividend / divisor)
+}
+```
+
+### Loop with Accumulator
+
+```rust
+fn factorial(n: u32) -> u32 {
+    let mut result = 1;
+    let mut i = 1;
+
+    loop {
+        if i > n {
+            break;
+        }
+        result *= i;
+        i += 1;
+    }
+
+    result
+}
+```
+
+### Iterator-Style Control Flow
+
+```rust
+// Traditional loop
+let mut sum = 0;
+for i in 1..=10 {
+    if i % 2 == 0 {
+        sum += i;
+    }
+}
+
+// Functional style (preview of [[iterators]])
+let sum: i32 = (1..=10)
+    .filter(|&x| x % 2 == 0)
+    .sum();
 ```
 
 ---
@@ -191,4 +414,3 @@ println!("Exited the outer loop");
 - [[ownership]] - Control flow affects ownership and borrowing
 
 **Practice**: `exercises/02_functions/`, `exercises/03_if/` | **Review**: [[rust-review-guide#Foundation Phase]]
-```
