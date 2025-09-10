@@ -1,5 +1,11 @@
 # Errors
 
+#advanced-features #error-handling #result #pattern-matching
+
+> Rust's approach to recoverable errors - builds on [[enums]] and [[option]] patterns
+
+**Related Topics**: [[enums]] | [[option]] | [[traits]] | [[control#Match]]
+
 ## `Result<T,E>` Enum
 
 `Result` allows a way to tell us whether it succeeded or failed and at the same time give us
@@ -140,4 +146,15 @@ fn read_username_from_file() -> Result<String, io::Error> {
     username_file.read_to_string(&mut username)?;
     Ok(username)
 }
+```
+
+---
+
+## See Also
+- [[enums]] - Foundation of the `Result<T,E>` enum
+- [[option]] - For values that might not exist
+- [[traits]] - `Result<T,E>` implements many useful traits
+- [[control]] - Pattern matching for error handling
+
+**Practice**: `exercises/13_error_handling/` | **Review**: [[rust-review-guide#Advanced Features Phase]]
 ```

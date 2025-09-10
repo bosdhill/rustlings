@@ -1,5 +1,11 @@
 # Generics
 
+#advanced-features #generics #type-system #traits
+
+> Generic programming in Rust - works closely with [[traits]] and enables [[lifetimes]]
+
+**Related Topics**: [[traits]] | [[lifetimes]] | [[ownership]] | [[errors]]
+
 ## Restriction
 
 Restricting generic types => only accept types that implement specific traits (like `std::cmp::PartialOrd`):
@@ -173,4 +179,15 @@ fn main() {
     // ^ TODO: Try uncommenting these.
     // | Error: Does not implement either `Debug` or `HasArea`.
 }
+```
+
+---
+
+## See Also
+- [[traits]] - Essential for generic programming with bounds
+- [[lifetimes]] - Generic lifetime parameters
+- [[ownership]] - Generic ownership patterns
+- [[errors]] - `Result<T,E>` is a generic enum
+
+**Practice**: `exercises/14_generics/` | **Review**: [[rust-review-guide#Advanced Features Phase]]
 ```

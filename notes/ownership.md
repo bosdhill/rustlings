@@ -1,5 +1,11 @@
 # References, Borrowing, and Ownership
 
+#fundamentals #ownership #memory-safety
+
+> Core concept that enables [[lifetimes]], [[ownership#Structs|structs]], and smart pointers
+
+**Related Topics**: [[lifetimes]] | [[generics]] | [[collections]] | [[errors]]
+
 ## Mutable vs Immutable References
 
 Multiple immutable references are allowed because no one who is just reading the data has the ability to affect anyone else's reading of the data.
@@ -32,8 +38,12 @@ println!("{}", r1);  // OK
 2. There can only be one **owner** at a time.
 3. When the **owner** goes out of scope, the value will be **dropped**.
 
-This is for heap-allocated values. For Stack-based values for primitive types, they can be copied and
+> 💡 These rules enable [[lifetimes]] and make smart pointers necessary for shared ownership
+
+This is for *heap-allocated values*. For *stack-based values* for primitive types, they can be copied and
 ownership semantics do not apply.
+
+See [the stack and the heap](https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html#the-stack-and-the-heap).
 
 ```rust
 // Ownership example
@@ -50,7 +60,11 @@ let s2 = s1;  // s1's ownership moves to s2
 
 ## Borrowing vs Ownership
 
-Borrowing = an immutable or mutable reference to some variable, that is temporary to do some operation, but will return ownership
+Borrowing will take a reference to a variable and do something with it, but cannot drop it.
+
+Ownership is a mutable reference to some variable that can drop it.
+
+**Borrowing** = an immutable or mutable reference to some variable, that is temporary to do some operation, but will *return ownership*
 
 ```rust
 // Borrowing example
@@ -63,7 +77,7 @@ let len = calculate_length(&s1);  // passing a reference (&s1) is borrowing
 println!("The length of '{}' is {}.", s1, len);  // s1 is still valid here
 ```
 
-Ownership = a mutable reference to some variable, that when going out of scopes, drops the value
+**Ownership** = a mutable reference to some variable, that after going out of scope will *drop the value*
 
 ```rust
 // Ownership transfer example
@@ -80,7 +94,7 @@ take_ownership(s1);  // s1's value moves into the function
 
 ## Ownership of Struct Data
 
-It’s possible for structs to store references to data owned by something else, but to do so requires the use of _lifetimes_.
+It's possible for structs to store references to data owned by something else, but to do so requires the use of [[lifetimes]].
 
 ```rust
 struct User {
@@ -125,8 +139,7 @@ fn main() {
 
 ### Ownership
 
-The same rules apply to struct methods. Usually, you would only want to borrow (i.e. use a immutable reference to `self`), and
-not take ownership (i.e use a mutable reference to `self`):
+The same rules apply to struct methods. Usually, you would only want to borrow (i.e. **immutable reference** to `self`), and not take ownership (i.e **mutable reference** to `self`):
 
 ```rust
 impl Rectangle {
@@ -153,11 +166,22 @@ _Note: we don’t want to take ownership, and we just want to read the data in t
 
 Rust has a feature called _automatic referencing and dereferencing_. Calling methods is one of the few places in Rust with this behavior.
 
-Here’s how it works: when you call a method with `object.something()`, Rust automatically adds in `&`, `&mut`, or `*` so object matches the signature of the method. In other words, the following are the same:
+Here’s how it works: when you call a method with `object.something()`, Rust automatically adds in `&`, `&mut`, or `*` so the **object matches the signature of the method**. In other words, the following are the same:
 
 ```rust
 p1.distance(&p2); // cleaner
 (&p1).distance(&p2); // messy
 ```
 
-This automatic referencing behavior works because methods have a clear receiver—the type of `self`. Given the receiver and name of a method, Rust can figure out definitively whether the method is reading (`&self`), mutating (`&mut self`), or consuming (`self`).
+This automatic referencing behavior works because methods have a **clear receiver**—the type of `self`. Given the receiver and name of a method, Rust can figure out definitively whether the method is reading (`&self`), mutating (`&mut self`), or consuming (`self`).
+
+---
+
+## See Also
+- [[lifetimes]] - How long references are valid
+- [[generics]] - Generic ownership patterns
+- [[smart-pointers]] - Alternative ownership models (`Box`, `Rc`, `Arc`)
+- [[collections]] - Ownership in data structures
+- [[traits]] - Ownership in trait methods
+
+**Practice**: `exercises/06_move_semantics/` | **Review**: [[rust-review-guide#Foundation Phase]]

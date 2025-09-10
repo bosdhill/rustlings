@@ -1,5 +1,11 @@
 # Control Flow
 
+#fundamentals #control-flow #pattern-matching #loops
+
+> Essential programming constructs - `match` is crucial for [[enums]] and [[option]]
+
+**Related Topics**: [[enums]] | [[option]] | [[errors]] | [[ownership]]
+
 ## If
 
 If expressions allow you to branch your code based on conditions. If the condition evaluates to `true`, the code block executes; if it's `false`, it skips the block.
@@ -174,4 +180,15 @@ Labels allow you to specify which loop you want to `break` or `continue` when yo
 }
 
 println!("Exited the outer loop");
+```
+
+---
+
+## See Also
+- [[enums]] - Pattern matching is essential for enums
+- [[option]] - `if let` and `match` patterns for `Option<T>`
+- [[errors]] - Pattern matching for error handling
+- [[ownership]] - Control flow affects ownership and borrowing
+
+**Practice**: `exercises/02_functions/`, `exercises/03_if/` | **Review**: [[rust-review-guide#Foundation Phase]]
 ```

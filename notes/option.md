@@ -1,5 +1,11 @@
 # Option
 
+#core-concepts #option #null-safety #pattern-matching
+
+> Rust's solution to null pointer problems - builds on [[enums]] patterns
+
+**Related Topics**: [[enums]] | [[errors]] | [[control#Match]] | [[lifetimes]]
+
 ## `Option` Enum vs Null Values
 
 The Option type encodes the very common scenario in which a value could be something or it could be nothing. This allows the compiler to check whether you've handled all the cases you should be handling.
@@ -136,3 +142,13 @@ if let Some(Some(x)) = nested {
 // Or chained methods
 let result = nested.and_then(|inner| inner);  // Some(42)
 ```
+
+---
+
+## See Also
+- [[enums]] - Foundation of the `Option<T>` enum
+- [[errors]] - `Result<T,E>` for recoverable errors
+- [[control]] - Pattern matching techniques
+- [[traits]] - `Option<T>` implements many useful traits
+
+**Practice**: `exercises/12_options/` | **Review**: [[rust-review-guide#Core Concepts Phase]]

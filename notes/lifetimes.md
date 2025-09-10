@@ -1,5 +1,11 @@
 # Lifetimes
 
+#advanced-features #lifetimes #memory-safety #references
+
+> Advanced memory safety - builds on [[ownership]] and works with [[generics]] and [[traits]]
+
+**Related Topics**: [[ownership]] | [[generics]] | [[traits]] | [[smart-pointers]]
+
 Lifetimes tells the compiler to explictly keep _references valid_ even if the borrowed value goes out of scope, e.g.
 "make sure parameter 'a' lives as long as parameter 'b' so that the return
 value is valid".
@@ -367,6 +373,17 @@ fn main() {
     let second: &'static [usize; 100] = random_vec();
     assert_ne!(first, second)
 }
+```
+
+---
+
+## See Also
+- [[ownership]] - Foundation for understanding lifetimes
+- [[generics]] - Generic lifetime parameters
+- [[traits]] - Lifetime bounds in traits
+- [[smart-pointers]] - Alternative to complex lifetime scenarios
+
+**Practice**: `exercises/16_lifetimes/` | **Review**: [[rust-review-guide#Advanced Features Phase]]
 ```
 
 ## Static Trait Bounds

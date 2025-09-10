@@ -1,5 +1,11 @@
 # Traits
 
+#advanced-features #traits #interfaces #generics
+
+> Rust's interface system - essential for [[generics]] and enables polymorphism
+
+**Related Topics**: [[generics]] | [[lifetimes]] | [[ownership]] | [[errors]]
+
 Traits ~ Interfaces
 
 ## Implementing Trait on a Type
@@ -177,4 +183,15 @@ fn returns_summarizable() -> impl Summary {
         reply: false,
         retweet: false,
     }
+}
 ```
+
+---
+
+## See Also
+- [[generics]] - Traits enable generic programming
+- [[lifetimes]] - Lifetime bounds on traits
+- [[ownership]] - Ownership semantics in trait methods
+- [[enums]] - Implementing traits for enums
+
+**Practice**: `exercises/15_traits/` | **Review**: [[rust-review-guide#Advanced Features Phase]]

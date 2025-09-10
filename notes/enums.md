@@ -1,5 +1,11 @@
 # Enumerations
 
+#core-concepts #pattern-matching #enums
+
+> Foundation for [[option]] and [[errors]] - enables powerful pattern matching
+
+**Related Topics**: [[option]] | [[errors]] | [[control#Match]] | [[traits]]
+
 Enums give you a way of saying a value is one of a possible set of values, for example, IPv4 and IPv6.
 Because these are the only possibilities for an IP address that our program will come across, we can enumerate all possible **variants**, which is where enumeration gets its name.
 
@@ -128,6 +134,8 @@ fn value_in_cents(coin: Coin) -> u8 {
 
 ## Matching with `Option<T>`
 
+> See [[option]] for detailed coverage of `Option<T>` patterns
+
 You can unwrap the inner `T` values using matching. For example, if you only want to do an operation on the inner value if there is `Some` value, you can do so in the match arm:
 
 ```rust
@@ -175,3 +183,13 @@ match dice_roll {
 fn add_fancy_hat() {}
 fn remove_fancy_hat() {}
 ```
+
+---
+
+## See Also
+- [[option]] - The most important enum in Rust
+- [[errors]] - `Result<T,E>` enum for error handling
+- [[control]] - Pattern matching with `match` and `if let`
+- [[traits]] - Implementing traits for enums
+
+**Practice**: `exercises/08_enums/` | **Review**: [[rust-review-guide#Core Concepts Phase]]
