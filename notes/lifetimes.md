@@ -15,7 +15,77 @@ Lifetimes are Rust's way of ensuring that references are valid for as long as ne
 > 💡 **Important**: Lifetime parameters are _inferred_ from the calling scope by the compiler. The compiler looks at the actual references you're passing in, determines their concrete lifetimes, and substitutes those for the generic lifetime parameters.
 
 Lifetimes are a compile-time construct used to ensure all borrows are valid - they have **zero runtime cost**.
+## Concept Reference Table
 
+| Concept                           | Example                                                                                          | Notes                                                                               |
+| --------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| <br>Lifetime annotation           | <pre><code class="language-rust">fn foo<'a>(x: &'a str)</code></pre>                             | <br>`'a` names a borrow’s lifetime. Doesn’t change runtime behavior.                |
+| <br>Multiple lifetimes            | <pre><code class="language-rust">fn bar<'a,'b>(x: &'a str, y: &'b str)</code></pre>              | <br>Each borrow tracked separately; may overlap.                                    |
+| <br>Return tied to input          | <pre><code class="language-rust">fn first<'a>(x: &'a str, y: &str) -> &'a str</code></pre>       | <br>Return ref must live at least as long as `'a`.                                  |
+| <br>Struct with lifetime          | <pre><code class="language-rust">struct Foo<'a> { <br>s: &'a str<br>}</code></pre>               | <br>Ties reference field to lifetime `'a`.                                          |
+| <br>Impl with lifetime            | <pre><code class="language-rust">impl<'a> Foo<'a> { fn get(&self) -> &str { ... } }</code></pre> | <br>Struct methods must respect lifetime constraints.                               |
+| <br>Trait bound with lifetime     | <pre><code class="language-rust">fn foo<T: 'a>(x: T)</code></pre>                                | <br>Type `T` must live at least `'a`.                                               |
+| <br>`'static` lifetime            | <pre><code class="language-rust">let s: &'static str = "hi";</code></pre>                        | <br>Lives for entire program (string literals, global constants).                   |
+| <br>Elision (inferred lifetimes)  | <pre><code class="language-rust">fn foo(x: &str) -> &str</code></pre>                            | <br>Compiler applies lifetime elision rules: parameters → output where unambiguous. |
+| <br>Dangling reference prevention | <pre><code class="language-rust">fn bad() -> &str { let s = String::from("x"); &s }</code></pre> | <br>Compile error: ref would outlive owner.                                         |
+|                                   |                                                                                                  |                                                                                     |
+### Non-overlapping Lifetimes Diagram
+
+``` mermaid
+sequenceDiagram
+
+    participant Caller
+
+    participant Function
+
+
+
+    Caller->>Caller: let s1 = String::from("hi")
+
+    Caller->>Caller: let r = &s1  // borrow starts ('a)
+
+    Caller->>Function: pass r (&'a str)
+
+    Function->>Function: param x: &'a str
+
+    Function-->>Caller: return &'a str (same ref)
+
+    Note over Caller,Function: Reference is valid as long as 'a is alive
+
+    Caller->>Caller: r ends, 'a borrow ends
+
+    Caller->>Caller: s1 still valid (owner)
+```
+
+**Figure 1** Shows a single reference borrowed, passed into a function, and returned. The returned reference remains valid only as long as the original borrow ('a) is alive. Demonstrates lifetime propagation.
+### Overlapping Lifetimes Diagram
+
+``` mermaid
+sequenceDiagram
+
+    participant Caller
+
+    participant Function
+
+
+
+    Caller->>Caller: let s1 = String::from("hi")
+
+    Caller->>Caller: let s2 = String::from("bye")
+
+    Caller->>Function: borrow &s1 ('a starts)
+
+    Caller->>Function: borrow &s2 ('b starts)
+
+    Function->>Function: compare(&'a str, &'b str)
+
+    Function-->>Caller: return bool
+
+    Note over Caller,Function: 'a and 'b live until borrows end
+
+    Caller->>Caller: borrows 'a and 'b end, s1 and s2 valid again
+```
+**Figure 2** Shows two references ('a and 'b) borrowed at the same time and passed into a function. Lifetimes overlap but are tracked independently, so they don’t interfere with each other.
 ### Why Lifetimes Matter
 
 ```rust
