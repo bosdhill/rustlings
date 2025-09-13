@@ -10,6 +10,16 @@ fn factorial(num: u64) -> u64 {
     // - additional variables
     // For an extra challenge, don't use:
     // - recursion
+
+    // My first attempt (was off by one initially)
+    // 1. use the range expression which can be used to create an iterator
+    // 2. use fold with an accumulator that starts at 1
+    // basically just a product of the arithmetic sequence from 1...num
+    //
+    // (1..num + 1).fold(1, |acc, x| acc * x)
+
+    // The compiler suggested I use 'product' instead
+    (1..num + 1).product()
 }
 
 fn main() {
