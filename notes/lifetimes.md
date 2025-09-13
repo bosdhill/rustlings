@@ -8,13 +8,16 @@
 
 ## Overview
 
-Lifetimes are Rust's way of ensuring that references are valid for as long as needed. They tell the compiler to explicitly keep _references valid_ and prevent dangling references.
+Lifetimes are Rust's way of ensuring that references are valid for as long as needed.  They're annotations that help the borrow checker ensure **references don't outlive the data they point to**.
 
-**Key insight**: Lifetime parameters signify particular lifetimes of values that are borrowed.
+When compared to scopes, lifetimes are more like compile-time contracts about reference validity, while scopes determine actual object lifetime at runtime.
+
+**Key insight**: Lifetime parameters signify particular lifetimes of values that are borrowed. 
 
 > 💡 **Important**: Lifetime parameters are _inferred_ from the calling scope by the compiler. The compiler looks at the actual references you're passing in, determines their concrete lifetimes, and substitutes those for the generic lifetime parameters.
 
 Lifetimes are a compile-time construct used to ensure all borrows are valid - they have **zero runtime cost**.
+
 ## Concept Reference Table
 
 | Concept                           | Example                                                                                          | Notes                                                                               |
@@ -86,28 +89,89 @@ sequenceDiagram
     Caller->>Caller: borrows 'a and 'b end, s1 and s2 valid again
 ```
 **Figure 2** Shows two references ('a and 'b) borrowed at the same time and passed into a function. Lifetimes overlap but are tracked independently, so they don’t interfere with each other.
-### Why Lifetimes Matter
 
-```rust
-// This would be unsafe - returning a reference to local data
-fn get_string() -> &str {
-    let s = String::from("hello");
-    &s  // ERROR: `s` dropped here while still borrowed
-}  // `s` goes out of scope
+## References and Aliasing
+There are two kinds of references:
+- Shared reference: `&`
+- Mutable reference: `&mut`
+Which obey the following rules:
+- A **reference** (`&` or `&mut`) cannot outlive its **referent** (value origin)
+- A **mutable reference** (`&mut`) cannot be **aliased** (pointed to by more than one reference)
 
-// Safe version - caller owns the data
-fn get_prefix(text: &str) -> &str {
-    &text[0..5]  // OK: reference has same lifetime as input
+What is aliasing? From the [aliasing chapter](https://doc.rust-lang.org/nomicon/aliasing.html):
+
+> variables and pointers _alias_ if they refer to overlapping regions of memory.
+
+That means that a read only reference and a mutable reference can't exist at the same time. 
+
+See  [[lifetime_causality#Lifetime Intervals|lifetime intervals]]:
+``` mermaid
+gantt
+    dateFormat  X
+    axisFormat  %L
+
+    section Aliasing Violation
+    Immutable borrow (&T) :e1, 2, 8
+    Mutable borrow (&mut T) :crit, 5, 9
+
+    section Use After Move
+    Original ownership valid :f1, 0, 5
+    Ownership moved (drop point) :milestone, 5, 0
+    Access after move (invalid) :crit, 6, 8
+```
+## Desugared Borrow Checker
+
+This is an example of how lifetimes are interpreted by the borrow checker:
+``` rust
+// Each let statement implicitly introduces a scope.
+let x = 0;
+let y = &x;
+let z = &y;
+
+
+// NOTE: `'a: {` and `&'b x` is not valid syntax!
+'a: {
+    let x: i32 = 0;
+    'b: {
+        // lifetime used is 'b because that's good enough.
+        let y: &'b i32 = &'b x;
+        'c: {
+            // ditto on 'c
+            let z: &'c &'b i32 = &'c y; // "a reference to a reference to an i32" (with lifetimes annotated)
+        }
+    }
 }
 ```
 
----
+Since the references are only used within each let statements inner scope, the borrow checker determines the minimum lifetime to be each let statement's scope.
+
+But what if we pass references to outer scopes? That will make the borrow checker infer a larger lifetime
+``` rust
+let x = 0;
+let z;
+let y = &x;
+// move y's immutable reference to z
+// so the reference needs to live as long as z's lifetime (or scope in this case)
+z = y;
+
+// desugared
+'a: {
+    let x: i32 = 0;
+    'b: {
+        let z: &'b i32;
+        'c: {
+            // Must use 'b here because the reference to x is
+            // being passed to the scope 'b.
+            let y: &'b i32 = &'b x;
+            z = y;
+        }
+    }
+}
+```
 
 ## Lifetime vs Scope
 
-Your original example perfectly illustrates this distinction:
-
-A lifetime of a value is not the same as its scope:
+A lifetime of a value is **not the same as its scope**, as a lifetime can encompass **disjoint scopes**.
 
 ```rust
 // Lifetimes are annotated below with lines denoting the creation
@@ -135,13 +199,9 @@ fn main() {
 ```
 
 **Key Point**: A lifetime is not the same as scope. The lifetime of `i` encompasses both borrows, even though they don't overlap.
-
----
-
 ## Lifetime Annotation Syntax
 
 Lifetime annotations describe the relationships between lifetimes but don't change how long references live.
-
 ### Basic Syntax
 
 ```rust
@@ -170,34 +230,9 @@ fn print_same<'a>(x: &'a i32, y: &'a i32) {
 }
 ```
 
-### Why This Fails
-
-Your analysis of why this fails is exactly right!
-
-```rust
-// This function declares lifetime 'a but has no input references
-fn failed_borrow<'a>() {
-    let _x = 12;  // Local variable
-
-    // ERROR: `_x` does not live long enough
-    let _y: &'a i32 = &_x;
-    // Problem: 'a could be any lifetime, potentially longer than this function!
-}
-```
-
-**Why it fails**:
-- The function promises to work with lifetime `'a`
-- `'a` could be longer than the function's execution
-- `_x` dies when the function ends
-- We can't return a reference to dead data
-
-**Key insight**: Lifetime parameters must be connected to input references or be `'static`.
-
----
-
 ## Lifetime Rules in Functions
 
-### The Rules (Your Original Notes Are Correct!)
+### The Rules
 
 1. **Input references** must be annotated with lifetimes
 2. **Output references** must have the same lifetime as an input reference OR be `'static`
@@ -243,21 +278,24 @@ fn modify_and_return<'a>(x: &'a mut i32) -> &'a mut i32 {
 }
 ```
 
-### Lifetime Elision Rules
+### Lifetime Elision (Inference) Rules
 
-Rust can often infer lifetimes, so you don't always need to write them:
+*Lifetime elision* is basically when the Rust compiler infers certain lifetime annotations in function signatures. 
+
+Lifetime elision = lifetime inference
+
+It uses three rules to assign distinct input lifetimes and map output lifetimes based on the presence of single or multiple input references, including `&self` or `&mut self`:
+1. **Each input reference gets its own lifetime:** Every reference parameter with an unspecified lifetime is assigned its own unique lifetime parameter.
+2. **If exactly one input lifetime, output gets same lifetime:** If there is exactly one input lifetime parameter, that lifetime is assigned to all elided output lifetimes.
+3. **If multiple inputs and one is `&self` or `&mut self`, output gets `self`'s lifetime:** If there are multiple input lifetime parameters, but one of them is `&self` or `&mut self` (a method receiver), the lifetime of `self` is assigned to all elided output lifetimes.
+
+Since Rust can often infer lifetimes, you don't always need to write them:
 
 ```rust
 // These are equivalent:
 fn first_word(s: &str) -> &str { /* ... */ }           // Elided
 fn first_word<'a>(s: &'a str) -> &'a str { /* ... */ } // Explicit
-
-// Rule 1: Each input reference gets its own lifetime
-// Rule 2: If exactly one input lifetime, output gets same lifetime
-// Rule 3: If multiple inputs and one is &self or &mut self, output gets self's lifetime
 ```
-
----
 
 ## Lifetimes in Structs
 
@@ -350,8 +388,6 @@ fn main() {
     println!("y is *not* borrowed in {:?}", number);
 }
 ```
-
----
 
 ## Lifetimes in Traits
 
@@ -458,7 +494,7 @@ The product is 6
 2 is the first
 ```
 
-## Static Lifetimes (lifetime which is remainder of the program)
+## Static Lifetimes
 
 Static lifetimes are used to represent data pointed to by the reference
 will exist for the lifetime of the program, and may be coerced into
@@ -552,12 +588,6 @@ where
 }
 ```
 
----
-
-## The `'static` Lifetime
-
-Your examples demonstrate the `'static` lifetime perfectly. Let me expand on this:
-
 ### Static References vs Static Bounds
 
 ```rust
@@ -601,89 +631,10 @@ fn spawn_thread() {
 }
 ```
 
----
-
-## Common Lifetime Patterns
-
-### The Lifetime Diamond Problem
-
-```rust
-// This is tricky - what lifetime should the return have?
-fn choose_str<'a, 'b>(x: &'a str, y: &'b str, choose_first: bool) -> &??? str {
-    if choose_first { x } else { y }
-}
-
-// Solution: Both inputs must have the same lifetime
-fn choose_str<'a>(x: &'a str, y: &'a str, choose_first: bool) -> &'a str {
-    if choose_first { x } else { y }
-}
-```
-
-### Self-Referential Structs (Advanced)
-
-```rust
-// This doesn't work - can't borrow from self
-// struct SelfRef<'a> {
-//     data: String,
-//     reference: &'a str,  // Can't refer to self.data
-// }
-
-// Solutions: Pin, Rc/RefCell, or external libraries like ouroboros
-```
-
-### Working with Closures
-
-```rust
-// Closures capture references with their own lifetimes
-fn create_closure<'a>(s: &'a str) -> impl Fn() -> &'a str {
-    move || s  // Closure must not outlive 's'
-}
-```
-
----
-
-## Troubleshooting Lifetime Errors
-
-### Common Error: "Borrowed value does not live long enough"
-
-```rust
-// Problem
-fn get_string_ref() -> &str {
-    let s = String::from("hello");
-    &s  // ERROR: s dropped here
-}
-
-// Solutions:
-// 1. Return owned data
-fn get_string() -> String {
-    String::from("hello")
-}
-
-// 2. Take input reference
-fn get_prefix(s: &str) -> &str {
-    &s[0..5]
-}
-
-// 3. Use 'static data
-fn get_static() -> &'static str {
-    "hello"  // String literal
-}
-```
-
-### Common Error: "Cannot infer appropriate lifetime"
-
-```rust
-// Problem - ambiguous lifetime
-// fn ambiguous(x: &str, y: &str) -> &str { x }
-
-// Solution - be explicit
-fn explicit<'a, 'b>(x: &'a str, _y: &'b str) -> &'a str { x }
-```
-
----
-
 ## See Also
 
+- [[lifetime_patterns]] - Common lifetime patterns and pitfalls.
+- [[lifetime_causality]] - Exploring temporal and causal structure of lifetimes.
 - [[ownership]] - Foundation for understanding lifetimes and borrowing
 - [[generics]] - Lifetime parameters work similarly to generic type parameters
 - [[traits]] - Lifetime bounds in trait definitions and implementations
