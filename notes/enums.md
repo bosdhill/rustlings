@@ -32,7 +32,7 @@ fn main() {
 }
 ```
 
-We can also use enums to store values, so we can associate the kind with the value, rather than an enum inside a struct, we can put data directly into each enum variant.
+We can also use enums to store values, so we can associate the kind with the value, rather than an enum inside a struct, we can put data directly into each enum *variant*.
 This new definition of the `IpAddr` enum says that both `V4` and `V6` variants will have associated `String` values:
 
 ```rust

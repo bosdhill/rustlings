@@ -26,20 +26,19 @@ mod tests {
     #[test]
     fn reference_mutation() {
         // Clone occurs because `input` needs to be mutated.
-        let vec = vec![-1, 0, 1];
-        let mut input = Cow::from(&vec);
-        abs_all(&mut input);
-        assert!(matches!(input, Cow::Owned(_)));
+        let vec = vec![-1, 0, 1];                  // 0. has a negative number, will be mutated
+        let mut input = Cow::from(&vec);           // 1. holds immutable `vec`
+        abs_all(&mut input);                       // 2. passes mutable Cow ref
+        assert!(matches!(input, Cow::Owned(_)));   // 3. now holds owned `vec` copy
     }
 
     #[test]
     fn reference_no_mutation() {
         // No clone occurs because `input` doesn't need to be mutated.
-        let vec = vec![0, 1, 2];
-        let mut input = Cow::from(&vec);
-        abs_all(&mut input);
-        // TODO: Replace `todo!()` with `Cow::Owned(_)` or `Cow::Borrowed(_)`.
-        assert!(matches!(input, todo!()));
+        let vec = vec![0, 1, 2];                    // 0. only positive numbers, will NOT be mutated
+        let mut input = Cow::from(&vec);            // 1. holds immutable `vec`
+        abs_all(&mut input);                        // 2. passes mutable Cow ref
+        assert!(matches!(input, Cow::Borrowed(_))); // 3. remains borrowed `vec`
     }
 
     #[test]
@@ -48,11 +47,10 @@ mod tests {
         // case, no mutation occurs (all numbers are already absolute) and thus
         // also no clone. But the result is still owned because it was never
         // borrowed or mutated.
-        let vec = vec![0, 1, 2];
-        let mut input = Cow::from(vec);
-        abs_all(&mut input);
-        // TODO: Replace `todo!()` with `Cow::Owned(_)` or `Cow::Borrowed(_)`.
-        assert!(matches!(input, todo!()));
+        let vec = vec![0, 1, 2];                    // 0. only positive numbers, will NOT be mutated
+        let mut input = Cow::from(vec);             // 1. holds owned `vec`
+        abs_all(&mut input);                        // 2. passes mutable Cow ref
+        assert!(matches!(input, Cow::Owned(_)));    // 3. `vec` stays owned
     }
 
     #[test]
@@ -60,10 +58,9 @@ mod tests {
         // Of course this is also the case if a mutation does occur (not all
         // numbers are absolute). In this case, the call to `to_mut()` in the
         // `abs_all` function returns a reference to the same data as before.
-        let vec = vec![-1, 0, 1];
-        let mut input = Cow::from(vec);
-        abs_all(&mut input);
-        // TODO: Replace `todo!()` with `Cow::Owned(_)` or `Cow::Borrowed(_)`.
-        assert!(matches!(input, todo!()));
+        let vec = vec![-1, 0, 1];                   // 0. has a negative number, will be mutated
+        let mut input = Cow::from(vec);             // 1. holds owned `vec`
+        abs_all(&mut input);                        // 2. passes mutable Cow ref
+        assert!(matches!(input, Cow::Owned(_)));    // 3. `vec` stays owned
     }
 }
